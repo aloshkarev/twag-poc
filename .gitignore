@@ -1,0 +1,33 @@
+# CMake build directory
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Compiled Object files
+*.o
+*.so
+*.a
+*.dylib
+
+# Executables
+twag
+twag_tests
+
+# Logs
+*.log
+
+# Certificates
+certs/
+*.pem
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Python cache
+__pycache__/
+*.pyc

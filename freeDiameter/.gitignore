@@ -1,0 +1,15 @@
+syntax: glob
+*.orig
+*.rej
+*~
+*.log
+*.sum
+.cache/
+.hg
+build*
+compile_commands.json
+test.*
+GPATH
+GRTAGS
+GTAGS
+.vscode

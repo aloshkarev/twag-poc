@@ -1,0 +1,1 @@
+C library for encoding and decoding gtpv2c messages. Current implementation is based on TS29.274 Release 15.

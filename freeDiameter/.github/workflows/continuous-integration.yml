@@ -1,0 +1,63 @@
+name: build
+on: [push]
+
+jobs:
+  all:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+#        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: install dependencies (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt update
+          sudo apt install libsctp-dev libgnutls28-dev libgcrypt-dev libidn2-dev
+      - name: install dependencies (macOS)
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          # Remove Python3 symlinks in /usr/local/bin as workaround to brew update issues
+          # https://github.com/actions/setup-python/issues/577
+          rm -f /usr/local/bin/2to3*
+          rm -f /usr/local/bin/idle3*
+          rm -f /usr/local/bin/pydoc*
+          rm -f /usr/local/bin/python3*
+          brew update
+          brew upgrade
+          brew install gnutls libgcrypt libidn2
+#      - name: install dependencies (Windows)
+#        if: ${{ runner.os == 'Windows' }}
+#        uses: lukka/run-vcpkg@v7
+#        id: runvcpkg
+#        with:
+#          vcpkgGitCommitId: 8bb3f9e4a08a5b71ee93a6f1bcdd7a258bb48392
+#          vcpkgTriplet: x64-windows
+#          vcpkgArguments: zlib bzip2 liblzma zstd
+      - name: prepare build directory
+        run: |
+          cmake -E make_directory ${{runner.workspace}}/build
+      - name: configure (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake ${{github.workspace}}
+      - name: configure (macOS)
+        if: ${{ runner.os == 'macOS' }}
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake -DDISABLE_SCTP:BOOL=ON ${{github.workspace}}
+#      - name: configure (Windows)
+#        if: ${{ runner.os == 'Windows' }}
+#        working-directory: ${{runner.workspace}}/build
+#        run: |
+#          cmake -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake ${{github.workspace}}
+      - name: build
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake --build . --config Release
+      - name: test
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          ctest -V -C Release

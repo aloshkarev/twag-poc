@@ -1,0 +1,5 @@
+The digested changelog can be found under:
+ contrib/debian/changelog
+
+You can also find the exhaustive list of change using git history,
+or at the following URL: https://github.com/freeDiameter/freeDiameter/commits/master/
